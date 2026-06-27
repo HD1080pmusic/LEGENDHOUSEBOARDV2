@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Prolific">
+<meta name="theme-color" content="#20242B">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAADwklEQVR42s1WTWxUVRT+zr1v3rz3ZpyfdugMUP9ojS0QIv7EBGk0itSgC7UCumFjNNGYaDRx686FihJMXLnSaHSBf2BI1MQYA4ougLYxUIq4KLHFluIM8waGd85xMU1p2plpm3QSb87q3ZvvvO+ec+730S3dG9DKZdDi5YCotQmo5QywjBTGGgDCshwGS8BXwJAxhorFkkJTqZSqigitFIOY41QqlXI5fHRHvzXm4LeHfd8P">
+<title>Prolific</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --board-bg:#F6F5F0;
+  --board-bg2:#EFEEE8;
+  --frame:#20242B;
+  --frame2:#2C313B;
+  --ink:#20242B;
+  --ink-soft:#5B6270;
+  --line:#DBDAD3;
+  --card:#FFFFFF;
+  --blue:#2E5EAA;
+  --green:#2F9E62;
+  --pink:#D6447D;
+  --orange:#DB7E1B;
+  --purple:#7B4FB0;
+  --teal:#1C8C8C;
+  --danger:#C23B3B;
+  --shadow: 0 1px 2px rgba(32,36,43,.06), 0 4px 14px rgba(32,36,43,.07);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  margin:0;
+  background:var(--board-bg);
+  background-image: linear-gradient(var(--line) 1px, transparent 1px);
+  background-size: 100% 28px;
+  font-family:'Inter',sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+}
+.app{max-width:880px;margin:0 auto;padding:18px 18px 60px;}
+
+.frame{
+  background:linear-gradient(135deg,var(--frame),var(--frame2));
+  border-radius:18px; padding:18px 22px; color:#fff;
+  box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.frame::after{ content:""; position:absolute; inset:0;
+  background:radial-gradient(circle at 90% 0%, rgba(255,255,255,.06), transparent 60%); }
+.frame-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.frame-title{ font-family:'Kalam',cursive; font-weight:700; font-size:28px; letter-spacing:.3px; }
+.frame-date{font-size:13px;color:#C8CCD6;font-family:'JetBrains Mono',monospace;}
+.members-row{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;align-items:center;}
+.who-pill{
+  margin-left:auto;font-size:12px;color:#C8CCD6;display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.08); padding:6px 10px; border-radius:20px; cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.bell-btn{
+  position:relative; cursor:pointer; font-size:18px; color:#fff;
+  padding:8px 10px; border-radius:10px; min-width:38px; min-height:38px;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.bell-btn:hover{ background:rgba(255,255,255,.12); }
+.badge{
+  position:absolute; top:0; right:0; background:var(--danger); color:#fff;
+  font-size:10.5px; font-weight:700; border-radius:10px; padding:1px 5px; line-height:1.4;
+  min-width:16px; text-align:center;
+}
+
+/* GIF Blended Border Layout */
+.avatar{
+  width:36px;height:36px;border-radius:50%; overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:13px;color:#fff;
+  border:none; flex:none;
+  position:relative;
+  cursor:pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+.avatar img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  border-radius:50%;
+  overflow:hidden;
+  outline: none;
+  mix-blend-mode: normal;
+  image-rendering: -webkit-optimize-contrast;
+}
+.avatar.active {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+.main-layout{ display:grid; grid-template-columns: 1fr 310px; gap:20px; margin-top:20px; }
+@media(max-width:768px){ .main-layout{ grid-template-columns:1fr; } }
+
+.board-col{ display:flex; flex-direction:column; gap:24px; }
+.widget{ background:var(--card); border-radius:14px; padding:16px; box-shadow:var(--shadow); border:1px solid var(--line); }
+.widget-title{ font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--ink-soft); margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; }
+
+.tabs{ display:flex; gap:6px; margin-bottom:14px; background:var(--board-bg2); padding:4px; border-radius:10px; }
+.tab{ flex:1; text-align:center; padding:7px; font-size:13px; font-weight:600; color:var(--ink-soft); border-radius:7px; cursor:pointer; background:transparent; border:none; }
+.tab.active{ background:#fff; color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,.05); }
+
+.chore-row{ display:flex; align-items:center; justify-content:between; padding:10px 0; border-bottom:1px dashed var(--line); gap:10px; }
+.chore-row:last-child{ border-bottom:none; }
+.chore-left{ display:flex; align-items:center; gap:10px; flex:1; }
+.check{ width:20px; height:20px; border-radius:6px; border:2px solid var(--line); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:11px; font-weight:700; flex:none; }
+.check.done{ background:var(--green); border-color:var(--green); }
+.chore-text{ font-size:14px; font-weight:500; }
+.chore-text.done{ text-decoration:line-through; color:var(--ink-soft); }
+.chore-meta{ display:flex; align-items:center; gap:6px; margin-top:2px; font-size:11.5px; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; }
+
+.empty{ text-align:center; padding:30px 10px; color:var(--ink-soft); font-size:13.5px; font-style:italic; }
+.btn-add{ width:28px; height:28px; border-radius:8px; background:var(--board-bg2); border:none; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--ink); cursor:pointer; }
+.btn-add:hover{ background:var(--line); }
+
+.expenses-summary{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:14px; }
+.exp-stat{ background:var(--board-bg); padding:10px; border-radius:8px; text-align:center; }
+.exp-stat-val{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:2px; }
+
+.exp-item{ display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--board-bg2); gap:10px; }
+.exp-item:last-child{ border-bottom:none; }
+.exp-amount{ font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13.5px; }
+
+.evt-item{ display:flex; align-items:center; gap:10px; padding:8px 0; border-left:3px solid var(--blue); padding-left:10px; margin-bottom:8px; background:var(--board-bg); border-radius:0 6px 6px 0; }
+.evt-date-box{ font-family:'JetBrains Mono',monospace; font-size:11px; background:#fff; border:1px solid var(--line); padding:2px 6px; border-radius:4px; text-align:center; font-weight:600; }
+
+.reminders-list{ display:flex; flex-direction:column; gap:8px; }
+.reminder-bubble{ background:var(--board-bg); border-radius:10px; padding:10px; display:flex; align-items:flex-start; gap:10px; border-left:3px solid var(--pink); }
+.reminder-bubble.done{ border-left-color:var(--line); opacity:.6; }
+
+.modal-back{ position:fixed; inset:0; background:rgba(32,36,43,.4); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); z-index:100; display:none; align-items:center; justify-content:center; padding:16px; }
+.modal{ background:#fff; border-radius:16px; width:100%; max-width:400px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+.modal-h{ font-size:16px; font-weight:700; margin:0 0 14px; }
+.form-g{ margin-bottom:12px; }
+.form-g label{ display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:4px; }
+.form-ctrl{ width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-family:inherit; font-size:14px; color:var(--ink); background:#fff; }
+.modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
+.btn{ border:none; padding:8px 16px; border-radius:8px; font-size:13.5px; font-weight:600; cursor:pointer; }
+.btn.primary{ background:var(--frame); color:#fff; }
+.btn.text{ background:transparent; color:var(--ink-soft); }
+
+.action-icon{ cursor:pointer; opacity:.4; font-size:14px; padding:4px; border-radius:4px; }
+.action-icon:hover{ opacity:1; background:var(--board-bg2); }
+.action-icon.danger:hover{ color:var(--danger); background:rgba(194,59,59,.1); }
+
+.notification-bell{ position:relative; }
+.notifications-dropdown{ position:absolute; top:calc(100% + 8px); right:0; width:280px; background:#fff; border-radius:12px; box-shadow: 0 10px 25px rgba(0,0,0,.15); border:1px solid var(--line); z-index:90; display:none; padding:6px 0; color:var(--ink); }
+.notif-item{ padding:8px 12px; font-size:12.5px; border-bottom:1px solid var(--board-bg); display:flex; flex-direction:column; gap:2px; }
+.notif-time{ font-size:10.5px; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; }
+
+.history-list{ display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; }
+.history-item{ font-size:12px; padding:6px 8px; background:var(--board-bg); border-radius:6px; border-left:2px solid var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="frame">
+    <div class="frame-top">
+      <div class="frame-title">Prolific Dashboard</div>
+      <div class="frame-date" id="current-date-label"></div>
+      
+      <div class="notification-bell">
+        <div class="bell-btn" id="bell-toggle-btn">🔔 <span class="badge" id="notif-badge">2</span></div>
+        <div class="notifications-dropdown" id="notif-dropdown">
+          <div class="notif-item">
+            <div>Zoro finished: Clean the kitchen counters</div>
+            <span class="notif-time">2 hours ago</span>
+          </div>
+          <div class="notif-item">
+            <div>Kitty added a movie night event!</div>
+            <span class="notif-time">Yesterday</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="members-row" id="members-list-container">
+      </div>
+  </header>
+
+  <main class="main-layout">
+    <div class="board-col">
+      <section class="widget">
+        <div class="widget-title">
+          <span>🧹 Household Chores</span>
+          <button class="btn-add" onclick="openModal('chore')">+</button>
+        </div>
+        <div class="tabs">
+          <button class="tab active" id="tab-all-chores" onclick="setChoreFilter('all')">All Chores</button>
+          <button class="tab" id="tab-mine-chores" onclick="setChoreFilter('mine')">My Chores</button>
+        </div>
+        <div id="chores-container"></div>
+      </section>
+
+      <section class="widget">
+        <div class="widget-title">
+          <span>💳 Shared Finances</span>
+          <button class="btn-add" onclick="openModal('expense')">+</button>
+        </div>
+        <div class="expenses-summary">
+          <div class="exp-stat">
+            <div style="font-size:11px; color:var(--ink-soft)">TOTAL FLOW</div>
+            <div class="exp-stat-val" style="color:var(--blue)" id="total-expenses-label">$0.00</div>
+          </div>
+          <div class="exp-stat">
+            <div style="font-size:11px; color:var(--ink-soft)">PER CAPITA</div>
+            <div class="exp-stat-val" id="per-capita-label">$0.00</div>
+          </div>
+        </div>
+        <div style="margin:14px 0 6px; font-size:12px; font-weight:700; color:var(--ink-soft)">SPLIT BALANCES</div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:8px; margin-bottom:16px;" id="balances-grid"></div>
+        <div style="font-size:12px; font-weight:700; color:var(--ink-soft); margin-bottom:8px;">LEDGER RECENTS</div>
+        <div id="expenses-container"></div>
+      </section>
+    </div>
+
+    <div class="board-col">
+      <section class="widget">
+        <div class="widget-title">
+          <span>📅 Upcoming Dates</span>
+          <button class="btn-add" onclick="openModal('event')">+</button>
+        </div>
+        <div id="events-container"></div>
+      </section>
+
+      <section class="widget">
+        <div class="widget-title">
+          <span>📌 Sticky Reminders</span>
+          <button class="btn-add" onclick="openModal('reminder')">+</button>
+        </div>
+        <div class="reminders-list" id="reminders-container"></div>
+      </section>
+
+      <section class="widget">
+        <div class="widget-title">⏳ Roommate Activity Audit</div>
+        <div class="history-list" id="logs-container"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal-back" id="modal-chore" onclick="closeModals()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-h">Add New Chore Task</div>
+    <form onsubmit="createChore(event)">
+      <div class="form-g"><label>Chore Description</label><input type="text" id="fc-text" class="form-ctrl" required></div>
+      <div class="form-g"><label>Assignee Roommate</label><select id="fc-assignee" class="form-ctrl"></select></div>
+      <div class="form-g"><label>Reward Points Valuation</label><input type="number" id="fc-points" class="form-ctrl" value="10"></div>
+      <div class="form-g"><label>Recurrence Frequency</label><select id="fc-freq" class="form-ctrl"><option value="daily">Every single day</option><option value="weekly">Once every week</option><option value="monthly">Once a month thing</option></select></div>
+      <div class="modal-actions"><button type="button" class="btn text" onclick="closeModals()">Cancel</button><button type="submit" class="btn primary">Insert Task</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-back" id="modal-expense" onclick="closeModals()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-h">Log Shared Purchase Bill</div>
+    <form onsubmit="createExpense(event)">
+      <div class="form-g"><label>Purchase Details</label><input type="text" id="fe-desc" class="form-ctrl" required></div>
+      <div class="form-g"><label>Amount Bill Value ($ USD)</label><input type="number" step="0.01" id="fe-amount" class="form-ctrl" placeholder="0.00" required></div>
+      <div class="form-g"><label>Who Paid It?</label><select id="fe-payer" class="form-ctrl"></select></div>
+      <div class="modal-actions"><button type="button" class="btn text" onclick="closeModals()">Cancel</button><button type="submit" class="btn primary">Log Ledger</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-back" id="modal-event" onclick="closeModals()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-h">Plan Schedule Event</div>
+    <form onsubmit="createEvent(event)">
+      <div class="form-g"><label>Event Name</label><input type="text" id="fev-title" class="form-ctrl" required></div>
+      <div class="form-g"><label>Calendar Date</label><input type="date" id="fev-date" class="form-ctrl" required></div>
+      <div class="modal-actions"><button type="button" class="btn text" onclick="closeModals()">Cancel</button><button type="submit" class="btn primary">Publish Date</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-back" id="modal-reminder" onclick="closeModals()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-h">Pin Shared Note Reminder</div>
+    <form onsubmit="createReminder(event)">
+      <div class="form-g"><label>Write note message</label><input type="text" id="fr-text" class="form-ctrl" required></div>
+      <div class="modal-actions"><button type="button" class="btn text" onclick="closeModals()">Cancel</button><button type="submit" class="btn primary">Stick Note</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+const USERS = [
+  { id: '1', name: 'Zoro', color: 'var(--green)', avatar: 'Zoro GIF.gif' },
+  { id: '2', name: 'Naruto', color: 'var(--orange)', avatar: 'Naruto Kurama GIF.gif' },
+  { id: '3', name: 'Trunks', color: 'var(--blue)', avatar: 'Trunks GIF.gif' },
+  { id: '4', name: 'Kitty', color: 'var(--pink)', avatar: 'Hello Kitty GIF.gif' },
+  { id: '5', name: 'Kuromi', color: 'var(--purple)', avatar: 'Kuromi GIF.gif' },
+  { id: '6', name: 'Cinamoroll', color: 'var(--teal)', avatar: 'Cinamoroll GIF.gif' },
+  { id: '7', name: 'Totoro', color: 'var(--ink-soft)', avatar: 'totoro-jumping.gif' }
+];
+
+let INITIAL_STATE = {
+  chores: [
+    { id: 'c1', text: 'Take out the garbage', assignedTo: '1', points: 10, done: false, frequency: 'weekly' },
+    { id: 'c2', text: 'Clean the kitchen counters', assignedTo: '2', points: 15, done: true, frequency: 'daily' },
+    { id: 'c3', text: 'Vacuum living room', assignedTo: '3', points: 20, done: false, frequency: 'weekly' }
+  ],
+  events: [
+    { id: 'e1', title: 'Rent Due 💰', date: '2026-07-01' },
+    { id: 'e2', title: 'Movie Night 🍿', date: '2026-06-28' }
+  ],
+  expenses: [
+    { id: 'ex1', description: 'Groceries Whole Foods', amount: 84.50, paidBy: '2', date: '2026-06-24', removed: false },
+    { id: 'ex2', description: 'Toilet paper & Soap', amount: 22.10, paidBy: '5', date: '2026-06-25', removed: false }
+  ],
+  reminders: [
+    { id: 'r1', text: 'Buy almond milk', done: false },
+    { id: 'r2', text: 'Fix leaky faucet downstairs', done: false }
+  ],
+  logs: [
+    { id: 'l1', text: 'Naruto added expense: Groceries Whole Foods ($84.50)', time: 'June 24' },
+    { id: 'l2', text: 'Zoro completed chore: Clean the kitchen counters', time: 'June 25' }
+  ]
+};
+
+let state = JSON.parse(localStorage.getItem('prolific_board_state')) || INITIAL_STATE;
+let currentUserId = '1';
+let choreFilter = 'all';
+
+document.getElementById('current-date-label').innerText = new Date().toLocaleDateString('en-US', {
+  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+});
+
+// Dropdown Toggles
+document.getElementById('bell-toggle-btn').onclick = (e) => {
+  e.stopPropagation();
+  const menu = document.getElementById('notif-dropdown');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+};
+document.body.onclick = () => {
+  document.getElementById('notif-dropdown').style.display = 'none';
+};
+
+function save() {
+  localStorage.setItem('prolific_board_state', JSON.stringify(state));
+  render();
+}
+
+function setIdentity(id) {
+  currentUserId = id;
+  render();
+}
+
+function setChoreFilter(mode) {
+  choreFilter = mode;
+  document.getElementById('tab-all-chores').classList.toggle('active', mode === 'all');
+  document.getElementById('tab-mine-chores').classList.toggle('active', mode === 'mine');
+  render();
+}
+
+function openModal(type) {
+  document.getElementById(`modal-${type}`).style.display = 'flex';
+  
+  // Populate dropdown lists inside forms dynamically
+  if (type === 'chore') {
+    const sel = document.getElementById('fc-assignee');
+    sel.innerHTML = USERS.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+  }
+  if (type === 'expense') {
+    const sel = document.getElementById('fe-payer');
+    sel.innerHTML = USERS.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+    sel.value = currentUserId;
+  }
+}
+
+function closeModals() {
+  document.querySelectorAll('.modal-back').forEach(m => m.style.display = 'none');
+}
+
+function addAudit(text) {
+  const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  state.logs.unshift({ id: 'log-' + Date.now(), text, time: dateStr });
+}
+
+// Action Logic Handlers
+function toggleChore(id) {
+  const c = state.chores.find(x => x.id === id);
+  if (c) {
+    c.done = !c.done;
+    if (c.done) {
+      const user = USERS.find(u => u.id === currentUserId);
+      addAudit(`${user.name} completed chore: ${c.text} (+${c.points} pts)`);
+    }
+    save();
+  }
+}
+
+function deleteChore(id) {
+  state.chores = state.chores.filter(x => x.id !== id);
+  save();
+}
+
+function createChore(e) {
+  e.preventDefault();
+  state.chores.push({
+    id: 'c-' + Date.now(),
+    text: document.getElementById('fc-text').value,
+    assignedTo: document.getElementById('fc-assignee').value,
+    points: parseInt(document.getElementById('fc-points').value) || 0,
+    frequency: document.getElementById('fc-freq').value,
+    done: false
+  });
+  closeModals();
+  document.getElementById('fc-text').value = '';
+  save();
+}
+
+function createExpense(e) {
+  e.preventDefault();
+  const amt = parseFloat(document.getElementById('fe-amount').value) || 0;
+  const desc = document.getElementById('fe-desc').value;
+  const payerId = document.getElementById('fe-payer').value;
+  state.expenses.push({
+    id: 'ex-' + Date.now(),
+    description: desc,
+    amount: amt,
+    paidBy: payerId,
+    date: new Date().toISOString().split('T')[0],
+    removed: false
+  });
+  const payer = USERS.find(u => u.id === payerId);
+  addAudit(`${USERS.find(u=>u.id===currentUserId).name} loaded expense: "${desc}" paid by ${payer.name} ($${amt.toFixed(2)})`);
+  closeModals();
+  document.getElementById('fe-amount').value = '';
+  document.getElementById('fe-desc').value = '';
+  save();
+}
+
+function removeExpense(id) {
+  const ex = state.expenses.find(x => x.id === id);
+  if (ex) {
+    ex.removed = true;
+    save();
+  }
+}
+
+// Event Schedule Handlers
+function createEvent(e) {
+  e.preventDefault();
+  state.events.push({
+    id: 'e-' + Date.now(),
+    title: document.getElementById('fev-title').value,
+    date: document.getElementById('fev-date').value
+  });
+  state.events.sort((a,b) => a.date.localeCompare(b.date));
+  closeModals();
+  document.getElementById('fev-title').value = '';
+  document.getElementById('fev-date').value = '';
+  save();
+}
+
+function deleteEvent(id) {
+  state.events = state.events.filter(x => x.id !== id);
+  save();
+}
+
+function createReminder(e) {
+  e.preventDefault();
+  state.reminders.push({
+    id: 'r-' + Date.now(),
+    text: document.getElementById('fr-text').value,
+    done: false
+  });
+  closeModals();
+  document.getElementById('fr-text').value = '';
+  save();
+}
+
+function toggleReminder(id) {
+  const r = state.reminders.find(x => x.id === id);
+  if (r) { r.done = !r.done; save(); }
+}
+
+function deleteReminder(id) {
+  state.reminders = state.reminders.filter(x => x.id !== id);
+  save();
+}
+
+// UI Re-rendering function
+function render() {
+  const currentUser = USERS.find(u => u.id === currentUserId);
+  
+  // Render headers/members
+  document.getElementById('members-list-container').innerHTML = USERS.map(u => `
+    <div class="avatar ${currentUserId === u.id ? 'active' : ''}" onclick="setIdentity('${u.id}')" title="Switch identity to ${u.name}">
+      <img src="${u.avatar}" alt="${u.name}" ${u.name === 'Trunks' ? 'style="object-position: center top;"' : ''}>
+    </div>
+  `).join('') + `
+    <div class="who-pill">
+      <span>Active mode:</span>
+      <span style="font-weight:700; color:${currentUser.color}">${currentUser.name}</span>
+    </div>
+  `;
+
+  // Render Chores
+  const filtered = state.chores.filter(c => choreFilter === 'all' || c.assignedTo === currentUserId);
+  const choresBox = document.getElementById('chores-container');
+  if (filtered.length === 0) {
+    choresBox.innerHTML = `<div class="empty">No tasks found here!</div>`;
+  } else {
+    choresBox.innerHTML = filtered.map(c => {
+      const assignee = USERS.find(u => u.id === c.assignedTo);
+      return `
+        <div class="chore-row">
+          <div class="chore-left">
+            <div class="check ${c.done ? 'done' : ''}" onclick="toggleChore('${c.id}')">${c.done ? '✓' : ''}</div>
+            <div>
+              <div class="chore-text ${c.done ? 'done' : ''}">${c.text}</div>
+              <div class="chore-meta">
+                <span style="color:${assignee?.color}; font-weight:600">@${assignee?.name}</span>
+                <span>•</span>
+                <span>🏆 ${c.points} pts</span>
+                <span>•</span>
+                <span>🔁 ${c.frequency}</span>
+              </div>
+            </div>
+          </div>
+          <span class="action-icon danger" onclick="deleteChore('${c.id}')">🗑</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Financial Split Metrics calculations
+  const activeEx = state.expenses.filter(x => !x.removed);
+  const total = activeEx.reduce((s, x) => s + x.amount, 0);
+  const share = total / USERS.length;
+  document.getElementById('total-expenses-label').innerText = `$${total.toFixed(2)}`;
+  document.getElementById('per-capita-label').innerText = `$${share.toFixed(2)}`;
+
+  const paidAmounts = {};
+  USERS.forEach(u => {
+    paidAmounts[u.id] = activeEx.filter(x => x.paidBy === u.id).reduce((s, x) => s + x.amount, 0);
+  });
+
+  document.getElementById('balances-grid').innerHTML = USERS.map(u => {
+    const diff = paidAmounts[u.id] - share;
+    return `
+      <div style="padding:8px; background:var(--board-bg); border-radius:6px; font-size:12px">
+        <div style="font-weight:600; color:${u.color}">${u.name}</div>
+        <div style="font-family:'JetBrains Mono'; font-weight:700; color:${diff >= 0 ? 'var(--green)' : 'var(--danger)'}">
+          ${diff >= 0 ? `+$${diff.toFixed(2)}` : `-$${Math.abs(diff).toFixed(2)}`}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const exBox = document.getElementById('expenses-container');
+  if (activeEx.length === 0) {
+    exBox.innerHTML = `<div class="empty">No shared expenses logged.</div>`;
+  } else {
+    exBox.innerHTML = activeEx.map(x => {
+      const payer = USERS.find(u => u.id === x.paidBy);
+      return `
+        <div class="exp-item">
+          <div>
+            <div style="font-size:13.5px; font-weight:500">${x.description}</div>
+            <div style="font-size:11.5px; color:var(--ink-soft)">
+              Paid by <span style="color:${payer?.color}; font-weight:600">${payer?.name}</span> on ${x.date}
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px">
+            <span class="exp-amount">${x.amount.toFixed(2)}</span>
+            ${x.paidBy === currentUserId ? `<span class="action-icon danger" onclick="removeExpense('${x.id}')">🗑</span>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Render Schedule
+  const evBox = document.getElementById('events-container');
+  if (state.events.length === 0) {
+    evBox.innerHTML = `<div class="empty">No items lined up.</div>`;
+  } else {
+    evBox.innerHTML = state.events.map(e => `
+      <div class="evt-item">
+        <div class="evt-date-box">
+          <div>${e.date.split('-')[1]}/${e.date.split('-')[2]}</div>
+        </div>
+        <div style="flex:1; font-size:13px; font-weight:600">${e.title}</div>
+        <span class="action-icon danger" onclick="deleteEvent('${e.id}')">🗑</span>
+      </div>
+    `).join('');
+  }
+
+  // Render Notes
+  const remBox = document.getElementById('reminders-container');
+  if (state.reminders.length === 0) {
+    remBox.innerHTML = `<div class="empty">No running notes.</div>`;
+  } else {
+    remBox.innerHTML = state.reminders.map(r => `
+      <div class="reminder-bubble ${r.done ? 'done' : ''}">
+        <div style="flex:1; font-size:13px; text-decoration:${r.done ? 'line-through' : 'none'}; cursor:pointer" onclick="toggleReminder('${r.id}')">
+          ${r.text}
+        </div>
+        <span class="action-icon danger" style="padding:0" onclick="deleteReminder('${r.id}')">×</span>
+      </div>
+    `).join('');
+  }
+
+  // Render History logs
+  document.getElementById('logs-container').innerHTML = state.logs.map(l => `
+    <div class="history-item">
+      <div>${l.text}</div>
+      <div style="font-size:10px; color:var(--ink-soft); margin-top:2px; font-family:'JetBrains Mono'">${l.time}</div>
+    </div>
+  `).join('');
+}
+
+// Kickstart Dashboard
+render();
+</script>
+</body>
+</html>
