@@ -1,231 +1,546 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tamagotchi Lifestyle App</title>
-    <style>
-        /* ==========================================================================
-           CHAO PET STYLES
-           ========================================================================== */
-        .pet-card {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            max-width: 320px; /* Made slightly wider to fit the larger pet */
-            margin: 20px auto;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Prolific">
+<meta name="theme-color" content="#1F3D2B">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAADwklEQVR42s1WTWxUVRT+zr1v3rz3ZpyfdugMUP9ojS0QIv7EBGk0itSgC7UCumFjNNGYaDRx686FihJMXLnSaHSBf2BI1MQYA4ougLYxUIq4KLHFluIM8waGd85xMU1p2plpm3QSb87q3ZvvvO+ec+730S3dG9DKZdDi5YCotQmo5QywjBTGGgDCshwGS8BXwJAxhorFkkJTqZSqigitFIOY41QqlXI5fHRHvzXm4LeHfd8PgoCjSJdQ5Gbb1lqOeHJqqrtr3auvvLR755MADnz5zd739p8eGc2k09axzNwMoS1XINDCsMZaY4v/FmOu+8Lzz76/7+2779osoqq6YX3PzoEnYo5z/MRgsVQK/ICIoKiP05YrLExLROVyWLpc6n/4oQ/2731q4HHP85jZWkNEzOz7Xt/WLdu3PTgxPnFycDhijrtuXQbU1XPHAnSI6Pre219/7eW+rVsAMLMxhub0Q63I1loAR3/97a139g0N/2EM6YKa2PZcgYDZMETCkkqldjyyvVgs+oGfa28nImPMPIpEpKqnR84cO/Z7Pt8xevZcGFasNZiDRgB1926u05eKSiUcH5/45KMPn941IMLG2HlnmNla+8VXh3Y9s6ejoyMIfKrX8obmJZzhgUwms7qQj8VcAAd+PNf34tef/TAKgFkhDJ2ZNS/uFgr5bDZTu8E6UPU+EkDCEkUsogD+niofGRo/P1meHWiQgWqtGByxsDTCaTwHBBCMIQC7t3Xff2fnmlwAwBgtn/rOyd4Uy/fOPdkIx6EGOwQimNqt5tuCfFsCUAAXv3/zn8NvOOm1a547FKzdBJXZlm+gB4RmAQCIIhHR2rWHf/1ikzmpTF85fxKAQpsjNHmLiEAiyswiTARVhZKYOLMAVmCZWUToeiGXowcEqGoyEVhrawNVW2mPXJeVo8wNnrU2mUioauMSNFY0UQ0Swceffv7Tz0dVlYyFCgzCkYtczBuoO3kw1j48NjbmB76oNsKhno33NNYACsOwei2CMrgKx0NVjJtU3y1LFI+uOhw5MScRBKK6bAYEKJBIJpMQimdNeh1fGLa3ekISO3P5geTNg9XpMQ4dEItQY9laxFWIgqsVzW40t+3RYLXpX1V9rLMrnn03e1+/d2MpqkIWkRy7Kt9Z9x2fCQKRRXVaimf10p96oUKnipcmS0PR9JEr41fBtTZvhtC76d7FVI+gDKnCxlFVAOqaslzzyMbI6Mq4CrJwElBBHACMIm3iAtWVchW1clz/E4JAsTTDszxf9P90di32pi131/8BEfaMkP/vxUkAAAAASUVORK5CYII=">
+<title>Prolific Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
-        .pet-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #f0f4f8;
-            border: 3px solid #333;
-            border-radius: 12px;
-            padding: 15px;
-            width: 100%;
-            height: 220px; /* Fixed height to keep layout stable during evolution */
-            justify-content: center;
-        }
+:root{
+  --board-bg:#FBF6EC;
+  --board-bg2:#F1E9D2;
+  --frame:#1F3D2B;
+  --frame2:#142A1C;
+  --ink:#2B2A28;
+  --ink-soft:#6E6557;
+  --card:#FFFFFF;
+  --blue:#2E78C9;
+  --green:#3FA86B;
+  --pink:#E0508B;
+  --orange:#F2962E;
+  --purple:#8C5FD1;
+  --danger:#D64545;
+  --shadow: 0 4px 14px rgba(60,46,16,.08);
+}
 
-        .chao-pet {
-            /* INCREASED SIZE: Changed from 96px to 150px */
-            width: 150px;
-            height: 150px;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            transition: transform 0.2s ease;
-        }
+body {
+  margin: 0;
+  background: var(--board-bg);
+  font-family: 'Inter', sans-serif;
+  color: var(--ink);
+  padding: 20px;
+}
 
-        /* Animations */
-        .chao-idle {
-            animation: chaoFloat 2s ease-in-out infinite;
-        }
+.dashboard-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
 
-        .chao-eating {
-            animation: chaoChew 0.3s ease infinite;
-        }
+/* ==========================================================================
+   ADVANCED TAMAGOTCHI CHAO WIDGET SYSTEM
+   ========================================================================== */
+.tamagotchi-card {
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 2px solid var(--board-bg2);
+  padding: 24px;
+  margin-bottom: 24px;
+}
 
-        .egg-shake {
-            animation: eggWobble 0.5s ease-in-out;
-        }
+.game-layout {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
 
-        @keyframes chaoFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
+.pet-screen-column {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-        @keyframes chaoChew {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1, 0.9); }
-        }
+.pet-viewport {
+  background: #eef2f7;
+  border: 4px solid #333;
+  border-radius: 14px;
+  width: 100%;
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 4px 10px rgba(0,0,0,0.08);
+  transition: background 0.5s ease;
+}
 
-        @keyframes eggWobble {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-10deg); }
-            75% { transform: rotate(10deg); }
-        }
+.pet-viewport.sleeping-mode {
+  background: #111827 !important;
+}
 
-        .stat-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #4b5563;
-            margin-top: 8px;
-        }
+.chao-graphics {
+  width: 150px;
+  height: 150px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  transition: transform 0.2s ease;
+  z-index: 2;
+}
 
-        .stat-bar {
-            width: 100%;
-            background-color: #e5e7eb;
-            border-radius: 9999px;
-            margin: 4px 0 8px 0;
-            overflow: hidden;
-            height: 10px;
-        }
+/* Animations */
+.chao-float { animation: petFloat 2s ease-in-out infinite; }
+.chao-chew { animation: petChew 0.3s ease infinite; }
+.egg-wobble { animation: eggShake 0.4s ease-in-out alternate infinite; }
 
-        .stat-fill {
-            height: 100%;
-            width: 50%;
-            border-radius: 9999px;
-            transition: width 0.3s ease;
-        }
+@keyframes petFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes petChew {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15, 0.85); }
+}
+@keyframes eggShake {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(8deg); }
+}
 
-        #hunger-fill { background-color: #10b981; }
-        #happiness-fill { background-color: #3b82f6; }
+.status-badge-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--danger);
+  color: white;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: bold;
+  display: none;
+  z-index: 10;
+}
 
-        .pet-buttons {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            margin-top: 10px;
-        }
+.mess-element {
+  position: absolute;
+  bottom: 15px;
+  left: 25px;
+  font-size: 24px;
+  z-index: 3;
+}
 
-        .pet-buttons button {
-            flex: 1;
-            padding: 8px 0;
-            cursor: pointer;
-            font-weight: bold;
-            border: 2px solid #333;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 0 #333;
-            transition: all 0.1s ease;
-        }
+/* Action Controls Dashboard */
+.pet-controls-column {
+  flex: 1.2;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-        .pet-buttons button:active {
-            transform: translateY(2px);
-            box-shadow: 0 0 0 #333;
-        }
-    </style>
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-box {
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+
+.stat-progress-bar {
+  background: #e2e8f0;
+  height: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.stat-fill-inner {
+  height: 100%;
+  width: 50%;
+  border-radius: 10px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.actions-button-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 10px 4px;
+  font-weight: bold;
+  font-size: 13px;
+  border: 2px solid #2d3748;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #2d3748;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.1s ease;
+}
+
+.action-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 #2d3748;
+}
+
+/* Minigame Engine Deck */
+.minigame-deck {
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 14px;
+  border: 1px dashed #cbd5e1;
+  text-align: center;
+}
+
+.minigame-box {
+  background: white;
+  border: 2px solid #333;
+  height: 60px;
+  border-radius: 8px;
+  margin: 10px 0;
+  position: relative;
+  overflow: hidden;
+  display: none;
+}
+
+#target-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 70%;
+  width: 15%;
+  background: var(--green);
+  opacity: 0.6;
+}
+
+#moving-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0%;
+  width: 6px;
+  background: var(--danger);
+}
+</style>
 </head>
 <body>
 
-    <div class="pet-card">
-        <h3 id="pet-stage-title" style="margin: 0 0 10px 0; color: #1f2937;">Chao Egg</h3>
-        
-        <div class="pet-container">
-            <img id="chaoPet" class="chao-pet" src="image_4f2302.png" alt="Chao Pet">
-            
-            <div style="width: 100%;">
-                <div class="stat-label">Fullness: <span id="hunger-val">50</span>%</div>
-                <div class="stat-bar"><div id="hunger-fill" class="stat-fill"></div></div>
-                
-                <div class="stat-label">Happiness: <span id="happiness-val">50</span>%</div>
-                <div class="stat-bar"><div id="happiness-fill" class="stat-fill"></div></div>
+<div class="dashboard-container">
+    
+    <div class="tamagotchi-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h2 id="chao-stage-title" style="margin:0; font-family:'Kalam',cursive; font-size:24px; color:var(--frame);">Chao Egg</h2>
+            <div style="font-size:12px; background:var(--board-bg2); padding:4px 10px; border-radius:20px; font-weight:bold;">
+                Age: <span id="chao-age-val">0</span> days | Evolutions: <span id="chao-points-val">0</span>/5
+            </div>
+        </div>
+
+        <div class="game-layout">
+            <div class="pet-screen-column">
+                <div id="petViewport" class="pet-viewport">
+                    <div id="statusAlert" class="status-badge-overlay">⚠️ SICK</div>
+                    <div id="messItem" class="mess-element" style="display:none;">💩</div>
+                    
+                    <img id="chaoPetAsset" class="chao-graphics egg-wobble" src="image_4f2302.png" alt="Chao Companion">
+                </div>
             </div>
 
-            <div class="pet-buttons">
-                <button id="feedBtn">🍎 Feed</button>
-                <button id="petBtn">❤️ Pet</button>
+            <div class="pet-controls-column">
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <div class="stat-header"><span>🍎 Hunger</span><span id="txt-hunger">50%</span></div>
+                        <div class="stat-progress-bar"><div id="bar-hunger" class="stat-fill-inner" style="background:var(--green)"></div></div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-header"><span>❤️ Happiness</span><span id="txt-happy">50%</span></div>
+                        <div class="stat-progress-bar"><div id="bar-happy" class="stat-fill-inner" style="background:var(--blue)"></div></div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-header"><span>⚡ Energy</span><span id="txt-energy">80%</span></div>
+                        <div class="stat-progress-bar"><div id="bar-energy" class="stat-fill-inner" style="background:var(--orange)"></div></div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-header"><span>🩺 Health</span><span id="txt-health">100%</span></div>
+                        <div class="stat-progress-bar"><div id="bar-health" class="stat-fill-inner" style="background:var(--pink)"></div></div>
+                    </div>
+                </div>
+
+                <div class="actions-button-matrix">
+                    <button id="actFeed" class="action-btn"><span>🍎</span>Feed</button>
+                    <button id="actPlay" class="action-btn"><span>🕹️</span>Play</button>
+                    <button id="actSleep" class="action-btn"><span>💤</span>Sleep</button>
+                    <button id="actClean" class="action-btn"><span>🧹</span>Clean</button>
+                    <button id="actMeds" class="action-btn"><span>💊</span>Heal</button>
+                    <button id="actPet" class="action-btn"><span>❤️</span>Pet</button>
+                </div>
+
+                <div class="minigame-deck">
+                    <span id="game-instructions">Click "Play" to start the Chao Reaction game!</span>
+                    <div id="gameBox" class="minigame-box">
+                        <div id="target-zone"></div>
+                        <div id="moving-bar"></div>
+                    </div>
+                    <button id="btnCatch" style="display:none; width:100%; padding:6px; background:var(--purple); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">TAP NOW!</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const chao = document.getElementById("chaoPet");
-        const feedBtn = document.getElementById("feedBtn");
-        const petBtn = document.getElementById("petBtn");
-        const stageTitle = document.getElementById("pet-stage-title");
+</div>
 
-        let hunger = 50;
-        let happiness = 50;
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Engine Elements
+    const chao = document.getElementById("chaoPetAsset");
+    const viewport = document.getElementById("petViewport");
+    const titleStage = document.getElementById("chao-stage-title");
+    const alertSick = document.getElementById("statusAlert");
+    const messItem = document.getElementById("messItem");
+
+    // Action Controllers
+    const btnFeed = document.getElementById("actFeed");
+    const btnPlay = document.getElementById("actPlay");
+    const btnSleep = document.getElementById("actSleep");
+    const btnClean = document.getElementById("actClean");
+    const btnMeds = document.getElementById("actMeds");
+    const btnPet = document.getElementById("actPet");
+
+    // Game Elements
+    const gameBox = document.getElementById("gameBox");
+    const movingBar = document.getElementById("moving-bar");
+    const btnCatch = document.getElementById("btnCatch");
+    const gameInst = document.getElementById("game-instructions");
+
+    // Dynamic State Metrics
+    let hunger = 50;
+    let happy = 50;
+    let energy = 80;
+    let health = 100;
+    
+    let isHatched = false;
+    let evolutionPoints = 0;
+    const EVOS_TO_HATCH = 5;
+    let age = 0;
+
+    let isSleeping = false;
+    let hasMess = false;
+    let isSick = false;
+
+    // MiniGame Tracking Loops
+    let gameInterval = null;
+    let barPosition = 0;
+    let barDirection = 2;
+
+    function refreshStats() {
+        // Constraints boundaries alignment
+        hunger = Math.max(0, Math.min(100, hunger));
+        happy = Math.max(0, Math.min(100, happy));
+        energy = Math.max(0, Math.min(100, energy));
+        health = Math.max(0, Math.min(100, health));
+
+        // Display updates text values
+        document.getElementById("txt-hunger").innerText = hunger + "%";
+        document.getElementById("txt-happy").innerText = happy + "%";
+        document.getElementById("txt-energy").innerText = energy + "%";
+        document.getElementById("txt-health").innerText = health + "%";
+
+        // Graphics bars update allocation
+        document.getElementById("bar-hunger").style.width = hunger + "%";
+        document.getElementById("bar-happy").style.width = happy + "%";
+        document.getElementById("bar-energy").style.width = energy + "%";
+        document.getElementById("bar-health").style.width = health + "%";
+
+        document.getElementById("chao-points-val").innerText = evolutionPoints;
+        document.getElementById("chao-age-val").innerText = age;
+
+        // Alerts validation matching states
+        alertSick.style.display = isSick ? "block" : "none";
+        messItem.style.display = hasMess ? "block" : "none";
+    }
+
+    function checkEvolution() {
+        if (!isHatched && evolutionPoints >= EVOS_TO_HATCH) {
+            isHatched = true;
+            titleStage.innerText = "Chao Companion";
+            chao.src = "image_4f22e2.png"; // Perm-swap to default character art
+            chao.classList.remove("egg-wobble");
+            chao.classList.add("chao-float");
+        }
+        refreshStats();
+    }
+
+    // Action Logic Matrix
+    btnFeed.addEventListener("click", () => {
+        if (isSleeping) return;
+        hunger = hunger + 20;
         
-        // Evolution System Variables
-        let isHatched = false;
-        let feedCount = 0; 
-        const FEEDS_TO_HATCH = 5; // Change this number to require more/fewer feeds to hatch
+        if (!isHatched) {
+            evolutionPoints++;
+            triggerBounce();
+            checkEvolution();
+        } else {
+            chao.classList.remove("chao-float");
+            chao.classList.add("chao-chew");
+            setTimeout(() => {
+                chao.classList.remove("chao-chew");
+                chao.classList.add("chao-float");
+            }, 1200);
+        }
+        refreshStats();
+    });
 
-        function updateDisplay() {
-            hunger = Math.max(0, Math.min(100, hunger));
-            happiness = Math.max(0, Math.min(100, happiness));
+    btnPet.addEventListener("click", () => {
+        if (isSleeping) return;
+        happy = happy + 15;
+        triggerBounce();
+        refreshStats();
+    });
 
-            document.getElementById("hunger-val").innerText = hunger;
-            document.getElementById("happiness-val").innerText = happiness;
+    function triggerBounce() {
+        chao.style.transform = "scale(1.15) translateY(-12px)";
+        setTimeout(() => chao.style.transform = "", 250);
+    }
 
-            document.getElementById("hunger-fill").style.width = hunger + "%";
-            document.getElementById("happiness-fill").style.width = happiness + "%";
+    btnClean.addEventListener("click", () => {
+        if (hasMess) {
+            hasMess = false;
+            happy = happy + 10;
+            refreshStats();
+        }
+    });
+
+    btnMeds.addEventListener("click", () => {
+        if (isSick) {
+            isSick = false;
+            health = 100;
+            happy = happy + 10;
+            refreshStats();
+        }
+    });
+
+    btnSleep.addEventListener("click", () => {
+        isSleeping = !isSleeping;
+        if (isSleeping) {
+            viewport.classList.add("sleeping-mode");
+            btnSleep.innerText = "☀️ Wake";
+        } else {
+            viewport.classList.remove("sleeping-mode");
+            btnSleep.innerText = "💤 Sleep";
+        }
+    });
+
+    // Minigame Loop Logic Integration
+    btnPlay.addEventListener("click", () => {
+        if (isSleeping || gameInterval) return;
+        
+        // Start game UI states configuration
+        gameBox.style.display = "block";
+        btnCatch.style.display = "block";
+        gameInst.innerText = "Stop the cursor inside the GREEN zone target!";
+        barPosition = 0;
+        barDirection = 2.5;
+
+        gameInterval = setInterval(() => {
+            barPosition += barDirection;
+            if (barPosition >= 98 || barPosition <= 0) {
+                barDirection *= -1; // Reverse course bounce tracking borders
+            }
+            movingBar.style.left = barPosition + "%";
+        }, 16);
+    });
+
+    btnCatch.addEventListener("click", () => {
+        if (!gameInterval) return;
+        clearInterval(gameInterval);
+        gameInterval = null;
+
+        // Verify if positions fall within boundaries (Target setup: left 70% to 85%)
+        if (barPosition >= 70 && barPosition <= 85) {
+            happy = happy + 25;
+            energy = energy - 10;
+            gameInst.innerText = "🎉 SUCCESS! Your Chao loves this game!";
+            if (!isHatched) { evolutionPoints++; checkEvolution(); }
+            triggerBounce();
+        } else {
+            happy = happy - 5;
+            energy = energy - 15;
+            gameInst.innerText = "❌ Missed! Try again next turn.";
         }
 
-        // Action: Feed
-        feedBtn.addEventListener("click", () => {
-            hunger = hunger + 15;
-            updateDisplay();
+        setTimeout(() => {
+            gameBox.style.display = "none";
+            btnCatch.style.display = "none";
+            gameInst.innerText = "Click \"Play\" to start the Chao Reaction game!";
+        }, 2000);
 
-            if (!isHatched) {
-                // EGG FORM: Wobbbling effect when fed
-                feedCount++;
-                chao.classList.add("egg-shake");
-                setTimeout(() => chao.classList.remove("egg-shake"), 500);
-
-                // Check if it's ready to hatch
-                if (feedCount >= FEEDS_TO_HATCH) {
-                    isHatched = true;
-                    stageTitle.innerText = "Chao Companion";
-                    chao.src = "image_4f22e2.png"; // Permanently morphs into Chao standard form
-                    chao.classList.add("chao-idle"); // Starts floating animation
-                }
-            } else {
-                // CHAO FORM: Chewing animation when fed, keeps the Chao body
-                chao.classList.remove("chao-idle");
-                chao.classList.add("chao-eating");
-
-                setTimeout(() => {
-                    chao.classList.remove("chao-eating");
-                    chao.classList.add("chao-idle");
-                }, 1200);
-            }
-        });
-
-        // Action: Pet
-        petBtn.addEventListener("click", () => {
-            happiness = happiness + 15;
-            updateDisplay();
-
-            // Simple hop reaction
-            chao.style.transform = "scale(1.1) translateY(-10px)";
-            setTimeout(() => {
-                chao.style.transform = "";
-            }, 200);
-        });
-
-        // Passive environmental decay
-        setInterval(() => {
-            hunger = hunger - 2;
-            happiness = happiness - 1;
-            updateDisplay();
-        }, 10000);
-        
-        updateDisplay();
+        refreshStats();
     });
-    </script>
 
+    // Time ticks degradation simulations (Runs balance engine cycles)
+    setInterval(() => {
+        if (isSleeping) {
+            energy = energy + 6;
+            hunger = hunger - 1;
+        } else {
+            hunger = hunger - 2;
+            happy = happy - 1.5;
+            energy = energy - 1;
+        }
+
+        // Environment modifiers tracking calculations
+        if (hunger < 20 || happy < 20 || hasMess) {
+            health = health - 4;
+        }
+
+        if (health < 40) {
+            isSick = true;
+        }
+
+        // Random organic events updates loops
+        if (!isSleeping && Math.random() < 0.08 && !hasMess) {
+            hasMess = true;
+        }
+
+        refreshStats();
+    }, 6000);
+
+    // Aging clock calculation cycles
+    setInterval(() => {
+        age++;
+        refreshStats();
+    }, 60000);
+
+    refreshStats();
+});
+</script>
 </body>
 </html>
