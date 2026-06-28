@@ -6,7 +6,7 @@
     <title>Tamagotchi Lifestyle App</title>
     <style>
         /* ==========================================================================
-           CHAO PET STYLES (Added cleanly without changing your original layout)
+           CHAO PET STYLES
            ========================================================================== */
         .pet-card {
             background: #ffffff;
@@ -18,7 +18,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            max-width: 280px;
+            max-width: 320px; /* Made slightly wider to fit the larger pet */
             margin: 20px auto;
             font-family: system-ui, -apple-system, sans-serif;
         }
@@ -32,23 +32,30 @@
             border-radius: 12px;
             padding: 15px;
             width: 100%;
+            height: 220px; /* Fixed height to keep layout stable during evolution */
+            justify-content: center;
         }
 
         .chao-pet {
-            width: 96px;
-            height: 96px;
-            /* Ensures your pixel art looks perfectly crisp and not blurry */
+            /* INCREASED SIZE: Changed from 96px to 150px */
+            width: 150px;
+            height: 150px;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
             transition: transform 0.2s ease;
         }
 
+        /* Animations */
         .chao-idle {
             animation: chaoFloat 2s ease-in-out infinite;
         }
 
         .chao-eating {
             animation: chaoChew 0.3s ease infinite;
+        }
+
+        .egg-shake {
+            animation: eggWobble 0.5s ease-in-out;
         }
 
         @keyframes chaoFloat {
@@ -59,6 +66,12 @@
         @keyframes chaoChew {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1, 0.9); }
+        }
+
+        @keyframes eggWobble {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
         }
 
         .stat-label {
@@ -115,9 +128,10 @@
 <body>
 
     <div class="pet-card">
-        <h3 style="margin: 0 0 10px 0; color: #1f2937;">Chao Companion</h3>
+        <h3 id="pet-stage-title" style="margin: 0 0 10px 0; color: #1f2937;">Chao Egg</h3>
+        
         <div class="pet-container">
-            <img id="chaoPet" class="chao-pet chao-idle" src="image_4f22e2.png" alt="Chao Pet">
+            <img id="chaoPet" class="chao-pet" src="image_4f2302.png" alt="Chao Pet">
             
             <div style="width: 100%;">
                 <div class="stat-label">Fullness: <span id="hunger-val">50</span>%</div>
@@ -139,9 +153,15 @@
         const chao = document.getElementById("chaoPet");
         const feedBtn = document.getElementById("feedBtn");
         const petBtn = document.getElementById("petBtn");
+        const stageTitle = document.getElementById("pet-stage-title");
 
         let hunger = 50;
         let happiness = 50;
+        
+        // Evolution System Variables
+        let isHatched = false;
+        let feedCount = 0; 
+        const FEEDS_TO_HATCH = 5; // Change this number to require more/fewer feeds to hatch
 
         function updateDisplay() {
             hunger = Math.max(0, Math.min(100, hunger));
@@ -159,18 +179,29 @@
             hunger = hunger + 15;
             updateDisplay();
 
-            chao.classList.remove("chao-idle");
-            chao.classList.add("chao-eating");
-            
-            // IMPORTANT: Change to your local eating image file name if needed
-            chao.src = "image_4f2302.png"; 
+            if (!isHatched) {
+                // EGG FORM: Wobbbling effect when fed
+                feedCount++;
+                chao.classList.add("egg-shake");
+                setTimeout(() => chao.classList.remove("egg-shake"), 500);
 
-            setTimeout(() => {
-                chao.classList.remove("chao-eating");
-                chao.classList.add("chao-idle");
-                // Returns back to standard idle image
-                chao.src = "image_4f22e2.png"; 
-            }, 1200);
+                // Check if it's ready to hatch
+                if (feedCount >= FEEDS_TO_HATCH) {
+                    isHatched = true;
+                    stageTitle.innerText = "Chao Companion";
+                    chao.src = "image_4f22e2.png"; // Permanently morphs into Chao standard form
+                    chao.classList.add("chao-idle"); // Starts floating animation
+                }
+            } else {
+                // CHAO FORM: Chewing animation when fed, keeps the Chao body
+                chao.classList.remove("chao-idle");
+                chao.classList.add("chao-eating");
+
+                setTimeout(() => {
+                    chao.classList.remove("chao-eating");
+                    chao.classList.add("chao-idle");
+                }, 1200);
+            }
         });
 
         // Action: Pet
@@ -178,20 +209,20 @@
             happiness = happiness + 15;
             updateDisplay();
 
-            chao.style.transform = "scale(1.2) translateY(-10px)";
+            // Simple hop reaction
+            chao.style.transform = "scale(1.1) translateY(-10px)";
             setTimeout(() => {
                 chao.style.transform = "";
             }, 200);
         });
 
-        // Passive environmental decay (stats drop slightly every 10 seconds)
+        // Passive environmental decay
         setInterval(() => {
             hunger = hunger - 2;
             happiness = happiness - 1;
             updateDisplay();
         }, 10000);
         
-        // Run initial configuration alignment
         updateDisplay();
     });
     </script>
